@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registration Form</title>
+  <style>
+    * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  form {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 2rem;
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="date"] {
+    width: 100%;
+    padding: 0.4rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background-color: #f0f3f7;
+    font-size: 1rem;
+  }
+
+  input[type="checkbox"] {
+    margin-right: 0.5rem;
+    transform: scale(1.1);
+  }
+
+  button[type="submit"] {
+    background-color: #28a745;
+    color: white;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+  }
+
+  button[type="submit"]:hover {
+    background-color: #218838;
+  }
+
+  table {
+    width: 100%;
+    max-width: 800px;
+    background-color: white;
+    border-collapse: collapse;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  th, td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+
+  th {
+    background-color: #f9fafb;
+    font-weight: bold;
+    text-transform: capitalize;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+</style>
+
+  </style>
+</head>
+<body>
+
+<h2>Registration Form</h2>
+<form id="registrationForm">
+  <label for="name">Name:</label><br/>
+  <input type="text" id="name" required><br/><br/>
+
+  <label for="email">Email:</label><br/>
+  <input type="email" id="email" required><br/><br/>
+
+  <label for="password">Password:</label><br/>
+  <input type="password" id="password" required><br/><br/>
+
+  <label for="dob">Date of Birth:</label><br/>
+  <input type="date" id="dob" required><br/><br/>
+
+  <label>
+    <input type="checkbox" id="acceptTerms" required>
+    I accept the terms and conditions
+  </label><br/><br/>
+
+  <button type="submit">Submit</button>
+</form>
+
+<h2>Entries</h2>
+<table id="entriesTable">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Password</th>
+      <th>Dob</th>
+      <th>Accepted terms?</th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+
+<script>
+  const form = document.getElementById("registrationForm");
+  const tableBody = document.querySelector("#entriesTable tbody");
+  const dobInput = document.getElementById("dob");
+
+  // DOB validation: 18 to 55 years old
+  function isAgeValid(dob) {
+    const dobDate = new Date(dob);
+    const today = new Date();
+    const age = today.getFullYear() - dobDate.getFullYear();
+    const m = today.getMonth() - dobDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < dobDate.getDate())) {
+      return age - 1;
+    }
+    return age;
+  }
+
+  function loadEntries() {
+    const entries = JSON.parse(localStorage.getItem("entries")) || [];
+    tableBody.innerHTML = "";
+    entries.forEach(entry => {
+      const row = tableBody.insertRow();
+      row.innerHTML = `
+        <td>${entry.name}</td>
+        <td>${entry.email}</td>
+        <td>${entry.password}</td>
+        <td>${entry.dob}</td>
+        <td>${entry.acceptedTerms}</td>
+      `;
+    });
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const dob = document.getElementById("dob").value;
+    const acceptedTerms = document.getElementById("acceptTerms").checked;
+
+    const age = isAgeValid(dob);
+    if (age < 18 || age > 55) {
+      alert("Age must be between 18 and 55.");
+      return;
+    }
+
+    const entry = { name, email, password, dob, acceptedTerms };
+    const entries = JSON.parse(localStorage.getItem("entries")) || [];
+    entries.push(entry);
+    localStorage.setItem("entries", JSON.stringify(entries));
+
+    loadEntries();
+    form.reset();
+  });
+
+  // Load entries on page load
+  window.addEventListener("DOMContentLoaded", loadEntries);
+</script>
+
+</body>
+</html>
