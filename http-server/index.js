@@ -1,35 +1,38 @@
-const http = require("http");
-const fs = require("fs");
+const http = require('http')
+const fs = require('fs')
+const path = require('path')
+const minimist = require('minimist')
 
-let homeContent = "";
-let projectContent = "";
+const args = minimist(process.argv.slice(2))
+const port = args.port || 3000
 
-fs.readFile("home.html", (err, home) => {
-  if (err) {
-    throw err;
+const server = http.createServer((req, res) => {
+  console.log(`Request URL: ${req.url}`)
+  if (req.url === '/' || req.url === '/home') {
+    serve('home.html', res)
+  } else if (req.url === '/project') {
+    serve('project.html', res)
+  } else if (req.url === '/registration') {
+    serve('registration.html', res)
+  } else {
+    res.writeHead(404)
+    res.end('404 Not Found')
   }
-  homeContent = home;
-});
+})
 
-fs.readFile("project.html", (err, project) => {
-  if (err) {
-    throw err;
-  }
-  projectContent = project;
-});
-http
-  .createServer((request, response) => {
-    let url = request.url;
-    response.writeHeader(200, { "Content-Type": "text/html" });
-    switch (url) {
-      case "/project":
-        response.write(projectContent);
-        response.end();
-        break;
-      default:
-        response.write(homeContent);
-        response.end();
-        break;
+function serve(filename, res) {
+  const filePath = path.join(__dirname, filename)
+  fs.readFile(filePath, (err, data) => {
+    if (err) {
+      res.writeHead(500)
+      res.end('500 Internal Server Error')
+    } else {
+      res.writeHead(200, { 'Content-Type': 'text/html' })
+      res.end(data)
     }
   })
-  .listen(3000);
+}
+
+server.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`)
+})
