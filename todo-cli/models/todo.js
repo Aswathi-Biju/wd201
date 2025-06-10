@@ -8,27 +8,21 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     static async showList() {
-      console.log("My Todo list \n");
+      console.log("My Todo list\n");
 
       console.log("Overdue");
       const overdueItems = await Todo.overdue();
-      overdueItems.forEach((item) => {
-        console.log(item.displayableString());
-      });
+      overdueItems.forEach((item) => console.log(item.displayableString()));
       console.log("\n");
 
       console.log("Due Today");
-      const dueTodayItems = await Todo.dueToday();
-      dueTodayItems.forEach((item) => {
-        console.log(item.displayableString());
-      });
+      const todayItems = await Todo.dueToday();
+      todayItems.forEach((item) => console.log(item.displayableString()));
       console.log("\n");
 
       console.log("Due Later");
-      const dueLaterItems = await Todo.dueLater();
-      dueLaterItems.forEach((item) => {
-        console.log(item.displayableString());
-      });
+      const laterItems = await Todo.dueLater();
+      laterItems.forEach((item) => console.log(item.displayableString()));
     }
 
     static async overdue() {
@@ -36,7 +30,6 @@ module.exports = (sequelize, DataTypes) => {
       return await Todo.findAll({
         where: {
           dueDate: { [sequelize.Sequelize.Op.lt]: today },
-          completed: false,
         },
         order: [["id", "ASC"]],
       });
@@ -47,7 +40,6 @@ module.exports = (sequelize, DataTypes) => {
       return await Todo.findAll({
         where: {
           dueDate: today,
-          completed: false,
         },
         order: [["id", "ASC"]],
       });
@@ -58,7 +50,6 @@ module.exports = (sequelize, DataTypes) => {
       return await Todo.findAll({
         where: {
           dueDate: { [sequelize.Sequelize.Op.gt]: today },
-          completed: false,
         },
         order: [["id", "ASC"]],
       });
@@ -73,21 +64,14 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     displayableString() {
-  const checkbox = this.completed ? "[x]" : "[ ]";
-  const today = new Date().toISOString().slice(0, 10);
-  const isDueToday = this.dueDate === today;
-  const isOverdue = this.dueDate < today;
-
-  // Show date only if NOT due today, OR if it's overdue (even if completed)
-  const displayDate = isDueToday ? "" : ` ${this.dueDate}`;
-
-  return `${this.id}. ${checkbox} ${this.title.trim()}${displayDate}`;
-}
-
-
+      const checkbox = this.completed ? "[x]" : "[ ]";
+      const today = new Date().toISOString().slice(0, 10);
+      const title = this.title.trim();
+      const displayDate = this.dueDate === today ? "" : ` ${this.dueDate}`;
+      return `${this.id}. ${checkbox} ${title}${displayDate}`;
+    }
   }
 
- 
   Todo.init(
     {
       title: {
@@ -96,12 +80,9 @@ module.exports = (sequelize, DataTypes) => {
       },
       dueDate: {
         type: DataTypes.DATEONLY,
-        allowNull: false,
       },
       completed: {
         type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false,
       },
     },
     {
