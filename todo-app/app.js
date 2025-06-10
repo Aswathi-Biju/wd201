@@ -18,8 +18,11 @@ app.get("/todos", async (req, res) => {
 // POST /todos - Create a new todo
 app.post("/todos", async (req, res) => {
   try {
-    const { title, dueDate, completed } = req.body;
-    const todo = await Todo.create({ title, dueDate, completed });
+    const todo = await Todo.create({
+      title: req.body.title,
+      dueDate: req.body.dueDate,
+      completed: false, // Set default as incomplete
+    });
     return res.status(201).json(todo);
   } catch (error) {
     console.error("Error creating todo:", error);
@@ -35,7 +38,9 @@ app.put("/todos/:id/markAsComplete", async (req, res) => {
       return res.status(404).json({ error: "Todo not found" });
     }
 
-    await todo.update({ completed: true });
+    todo.completed = true;
+    await todo.save();
+
     return res.status(200).json(todo);
   } catch (error) {
     console.error("Error marking todo complete:", error);
