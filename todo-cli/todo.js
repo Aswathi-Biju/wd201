@@ -6,7 +6,9 @@ const todoList = () => {
   };
 
   const markAsComplete = (index) => {
-    all[index].completed = true;
+    if (all[index]) {
+      all[index].completed = true;
+    }
   };
 
   const overdue = () => {
@@ -29,8 +31,8 @@ const todoList = () => {
     return list
       .map((todo) => {
         const checkbox = todo.completed ? "[x]" : "[ ]";
-        const displayDate = todo.dueDate === today ? "" : ` ${todo.dueDate}`;
-        return `${checkbox} ${todo.title}${displayDate}`;
+        const dateStr = todo.dueDate === today ? "" : ` ${todo.dueDate}`;
+        return `${checkbox} ${todo.title}${dateStr}`;
       })
       .join("\n");
   };
