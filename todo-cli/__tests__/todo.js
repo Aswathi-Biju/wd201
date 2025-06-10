@@ -8,39 +8,42 @@ describe("Todo List Test Suite", () => {
   const yesterday = formattedDate(new Date(Date.now() - 86400000));
   const tomorrow = formattedDate(new Date(Date.now() + 86400000));
 
-  beforeAll(() => {
+  beforeEach(() => {
     todos = todoList();
-
-    todos.add({ title: "Submit assignment", dueDate: yesterday, completed: false });
-    todos.add({ title: "Pay rent", dueDate: today, completed: true });
-    todos.add({ title: "Service Vehicle", dueDate: today, completed: false });
-    todos.add({ title: "File taxes", dueDate: tomorrow, completed: false });
-    todos.add({ title: "Pay electric bill", dueDate: tomorrow, completed: false });
   });
 
   test("should add a new todo", () => {
     const initialLength = todos.all.length;
-    todos.add({ title: "New Todo", dueDate: today, completed: false });
+    todos.add({ title: "Test adding", dueDate: today, completed: false });
     expect(todos.all.length).toBe(initialLength + 1);
+    expect(todos.all[0].title).toBe("Test adding");
   });
 
   test("should mark a todo as complete", () => {
-    todos.markAsComplete(2); // "Service Vehicle"
-    expect(todos.all[2].completed).toBe(true);
+    todos.add({ title: "Mark me complete", dueDate: today, completed: false });
+    expect(todos.all[0].completed).toBe(false);
+    todos.markAsComplete(0);
+    expect(todos.all[0].completed).toBe(true);
   });
 
   test("should return overdue items", () => {
-    const overdue = todos.overdue();
-    expect(overdue.every((item) => item.dueDate < today)).toBe(true);
+    todos.add({ title: "Overdue task", dueDate: yesterday, completed: false });
+    const items = todos.overdue();
+    expect(items.length).toBe(1);
+    expect(items[0].dueDate).toBe(yesterday);
   });
 
   test("should return due today items", () => {
-    const dueToday = todos.dueToday();
-    expect(dueToday.every((item) => item.dueDate === today)).toBe(true);
+    todos.add({ title: "Due today task", dueDate: today, completed: false });
+    const items = todos.dueToday();
+    expect(items.length).toBe(1);
+    expect(items[0].dueDate).toBe(today);
   });
 
   test("should return due later items", () => {
-    const dueLater = todos.dueLater();
-    expect(dueLater.every((item) => item.dueDate > today)).toBe(true);
+    todos.add({ title: "Due later task", dueDate: tomorrow, completed: false });
+    const items = todos.dueLater();
+    expect(items.length).toBe(1);
+    expect(items[0].dueDate).toBe(tomorrow);
   });
 });
