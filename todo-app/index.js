@@ -1,5 +1,12 @@
-const app = require("./app");
+const express = require("express");
+const app = express();
+const { Todo } = require("./models");
 
-app.listen(3000, () => {
-  console.log("Started express server at port 3000");
-});
+// Set view engine to EJS
+app.set("view engine", "ejs");
+
+// To serve static files (like styles.css)
+app.use(express.static("public"));
+
+// Middleware to parse request bodies (optional if needed)
+app.use(express.urlencoded({ extended: false }));
