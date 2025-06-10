@@ -1,0 +1,13 @@
+<!-- views/index.ejs -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Todo App</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body>
+    <%- include("header") %>
+    <%- include("todos", { todos: todos }) %>
+    <%- include("footer") %>
+  </body>
+</html>
