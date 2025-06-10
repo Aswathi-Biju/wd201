@@ -24,17 +24,25 @@ app.get("/todos", async function (_request, response) {
 // 2️⃣ POST /todos - Create a new todo and respond with JSON
 app.post("/todos", async function (request, response) {
   try {
+    const { title, dueDate } = request.body;
+
+    if (!title || !dueDate) {
+      return response.status(400).json({ error: "Title and dueDate are required" });
+    }
+
     const todo = await Todo.create({
-      title: request.body.title,
-      dueDate: request.body.dueDate,
+      title,
+      dueDate,
       completed: false,
     });
-    return response.status(201).json(todo); // 201 for created
+
+    return response.status(200).json(todo); 
   } catch (error) {
-    console.error("Error creating todo:", error);
+    console.error(error);
     return response.status(422).json(error);
   }
 });
+
 
 // 3️⃣ PUT /todos/:id/markAsCompleted - Mark todo as completed
 app.put("/todos/:id/markAsCompleted", async function (request, response) {
