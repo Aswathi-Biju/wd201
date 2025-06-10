@@ -24,15 +24,14 @@ app.get("/todos", async function (_request, response) {
 // 2️⃣ POST /todos - Create a new todo and respond with JSON
 app.post("/todos", async function (request, response) {
   try {
-    const { title, dueDate } = request.body;
     const todo = await Todo.create({
-      title,
-      dueDate,
+      title: request.body.title,
+      dueDate: request.body.dueDate,
       completed: false,
     });
-    return response.status(201).json(todo);
+    return response.status(201).json(todo); // 201 for created
   } catch (error) {
-    console.error(error);
+    console.error("Error creating todo:", error);
     return response.status(422).json(error);
   }
 });
